@@ -29,7 +29,7 @@ jobs:
           -Dsonar.host.url=http://sonarqube.kcspl.in \
           -Dsonar.login=89f09c21d9b7f2f8e67b98200b5772794b4c2872 \
           -Dsonar.projectKey=sports \
-          -Dsonar.sources= ./src \
+          -Dsonar.sources=./src \
           -Dsonar.javascript.lcov.reportPaths=./coverage/icov.info
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
