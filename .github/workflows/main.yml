@@ -24,7 +24,7 @@ jobs:
 
     - name: jest installation and check test cases
       run : |
-        npm i superfast
+        npm i supertest
         npm install jest 
         npm run test --coverage
 
