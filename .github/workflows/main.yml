@@ -1,0 +1,46 @@
+name: SonarQube report analysis and Quality gate
+
+on:
+  push:
+    branches:
+      - '*'
+
+  pull_request: 
+      branches:
+      - '*'
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: SonarQube Scan
+      run: |
+        npm install -g sonarqube-scanner
+        sonar-scanner \
+          -Dsonar.host.url= http://sonarqube.kcspl.in:9000 \
+          -Dsonar.login= 89f09c21d9b7f2f8e67b98200b5772794b4c2872 \
+          -Dsonar.projectKey=sports \
+          -Dsonar.sources= ./src \
+          -Dsonar.javascript.lcov.reportPaths=./coverage/icov.info
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        
+    - name: Check SonarQube Quality Gate
+      run: |
+        STATUS=$(curl -s "http://sonarqube.kcspl.in:9000/api/qualitygates/project_status?projectKey=QulityGateTest" -u "4bfeceb86030431b89e0f94ac01e996405e8f016" | jq -r '.projectStatus.status')
+       
+        if [ "$STATUS" != "OK" ]; then
+          echo "SonarQube Quality Gate Failed !!"
+          exit 1
+        else
+          echo "SonarQube Quality Gate passed !!" 
+        fi
