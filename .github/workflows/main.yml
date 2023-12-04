@@ -26,7 +26,7 @@ jobs:
       run: |
         npm install -g sonarqube-scanner
         sonar-scanner \
-          -Dsonar.host.url=http://sonarqube.kcspl.in \
+          -Dsonar.host.url=http://sonarqube.kcspl.in:9000 \
           -Dsonar.login=89f09c21d9b7f2f8e67b98200b5772794b4c2872 \
           -Dsonar.projectKey=sports \
           -Dsonar.sources=./src \
