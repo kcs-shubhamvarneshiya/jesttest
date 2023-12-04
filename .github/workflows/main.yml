@@ -25,6 +25,7 @@ jobs:
     - name: jest installation and check test cases
       run : |
         npm install jest 
+        npm i superfast
         npm run test --coverage
 
     - name: SonarQube Scan
