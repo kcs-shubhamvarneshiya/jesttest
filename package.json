@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start":"npm run",
-    "test": "jest --coverage"
+    "test": "jest --coverage --detectOpenHandles"
   },
   "scan" : "sonar-scanner",
   "jest": {
