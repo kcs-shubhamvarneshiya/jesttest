@@ -23,4 +23,10 @@ describe('Test the root path', () => {
     expect(response.body.message).toBe('Welcome to the Express API!');
   });
 
+  test('It should respond with a test route', async () => {
+    const response = await request(app).get('/test');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('test reached successfully!');
+  });
+
 });
