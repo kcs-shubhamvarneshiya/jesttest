@@ -29,4 +29,10 @@ describe('Test the root path', () => {
     expect(response.body.message).toBe('test reached successfully!');
   });
 
+  test('negative API test', async () => {
+    const response = await request(app).get('/test');
+    expect(response.statusCode).toBe(500);
+    expect(response.body.message).toBe('server error');
+  });
+
 });
