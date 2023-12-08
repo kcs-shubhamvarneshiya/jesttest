@@ -28,6 +28,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
+          npm install -g sonarqube-scanner
           sonar-scanner \
             -Dsonar.host.url=http://sonarqube.kcspl.in:9000 \
             -Dsonar.projectKey=QulityGateTest \
