@@ -26,7 +26,7 @@ jobs:
       run: npm install
     
     - name: Run tests with coverage
-      run: npm jest --coverage --detectOpenHandles
+      run: npm test --coverage --detectOpenHandles
     
     - name: Upload coverage report
       uses: actions/upload-artifact@v2
