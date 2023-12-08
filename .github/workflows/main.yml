@@ -17,15 +17,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Install Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: 14
-
-    - name: jest installation and check test cases
-      run : |
-        npm install
-        npm run test --coverage
+          node-version: '14'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Run tests with coverage
+      run: npm test -- --coverage
+    
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: ./coverage
 
     - name: SonarQube Scan
       run: |

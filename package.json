@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "start":"npm run",
     "test": "jest --coverage"
   },
   "scan" : "sonar-scanner",
