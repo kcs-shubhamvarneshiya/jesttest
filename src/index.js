@@ -62,6 +62,4 @@ app.get('/api/test', (req, res) => {
   res.status(200).json({ message: 'another test reached successfully!' });
 })
 
-
-
 module.exports = app;
