@@ -31,7 +31,7 @@ describe('Test the root path', () => {
 
   test('negative API test', async () => {
     const response = await request(app).get('/test');
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(500);
   });
 
 });
