@@ -29,9 +29,9 @@ describe('Test the root path', () => {
     expect(response.body.message).toBe('test reached successfully!');
   });
 
-  test('negative API test', async () => {
-    const response = await request(app).get('/test');
-    expect(response.statusCode).toBe(500);
+  test('It should respond with a another test route', async () => {
+    const response = await request(app).get('/api/test');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('another test reached successfully!');
   });
-
 });
