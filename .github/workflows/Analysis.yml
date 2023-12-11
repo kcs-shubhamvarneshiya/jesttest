@@ -3,7 +3,11 @@ name: Check testcases and quality gate status
 on:
   push:
     branches:
-      - main
+      - '*'
+  
+  pull_request: 
+    branches:
+      - '*'
 
 jobs:
   sonarqube-analysis:
@@ -41,17 +45,17 @@ jobs:
         run: |
           npm install -g sonarqube-scanner
           sonar-scanner \
-            -Dsonar.host.url=http://sonarqube.kcspl.in:9000 \
-            -Dsonar.projectKey=QulityGateTest \
+            -Dsonar.host.url=${{secrets.SERVER_URL}} \
+            -Dsonar.projectKey=${{secrets.PROJECT_KEY}} \
             -Dsonar.sources=./src \
             -Dsonar.test.inclusions=test/index.test.js \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-            -Dsonar.login=82937a40b7dbb37782bacb338c7bca84a24196e9
+            -Dsonar.login=${{secrets.PROJECT_TOKEN}}
 
       - name: identify SonarQube Quality Gate status
         run: |
           echo "Identifying quality gate status..."
-            STATUS=$(curl -s "http://sonarqube.kcspl.in:9000/api/qualitygates/project_status?projectKey=QulityGateTest" -u "4bfeceb86030431b89e0f94ac01e996405e8f016" | jq -r '.projectStatus.status')
+            STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
              
             if [ "$STATUS" != "OK" ]; then
               echo "SonarQube Quality Gate Failed !!"
