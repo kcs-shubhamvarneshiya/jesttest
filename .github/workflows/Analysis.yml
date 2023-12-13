@@ -43,7 +43,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo "Pull Request number is ${{ github.event.pull_request.number }}"
+          echo "Pull Request number is ${{ github.event.pull_request.head.ref }}"
           npm install -g sonarqube-scanner
           sonar-scanner \
             -Dsonar.host.url=${{secrets.SERVER_URL}} \
@@ -51,7 +51,8 @@ jobs:
             -Dsonar.sources=./src \
             -Dsonar.test.inclusions=test/index.test.js \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-            -Dsonar.login=${{secrets.PROJECT_TOKEN}}
+            -Dsonar.login=${{secrets.PROJECT_TOKEN}} \
+            -Dsonar.branch.name=${{ github.event.pull_request.head.ref }}
 
       - name: identify SonarQube Quality Gate status
         run: |
