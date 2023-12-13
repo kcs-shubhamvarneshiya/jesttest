@@ -43,9 +43,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          pullRequest=$(System.PullRequest.PullRequestId)
-          echo $pullRequest
-          echo pullRequest
+          echo "Pull Request number is ${{ github.event.pull_request.number }}"
           npm install -g sonarqube-scanner
           sonar-scanner \
             -Dsonar.host.url=${{secrets.SERVER_URL}} \
