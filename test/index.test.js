@@ -22,10 +22,34 @@ describe('Test the root path', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe('Welcome to the Express API!');
   });
-  
+
+  test('It should respond with a test route', async () => {
+    const response = await request(app).get('/test');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('test reached successfully!');
+  });
+
+  test('It should respond with a another test route', async () => {
+    const response = await request(app).get('/api/test');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('another test reached successfully!');
+  });
+
   test('should return event data',async()=>{
     const response = await request(app).get('/event');
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe('Data retrieved successfully.');
+  })
+
+  test('It should respond with a another test route', async () => {
+    const response = await request(app).get('/shubham');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('test reached successfully!');
+  });
+
+  test('should return event data',async()=>{
+    const response = await request(app).get('/keertik');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('another test reached successfully!');
   })
 });
