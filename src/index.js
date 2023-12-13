@@ -70,4 +70,12 @@ app.get('/keertik', (req, res) => {
   res.status(200).json({ message: 'another test reached successfully!' });
 })
 
+app.get('/fect', (req, res) => {
+  res.status(200).json({ message: 'another fect reached successfully!' });
+})
+
+app.get('/nofect', (req, res) => {
+  res.status(200).json({ message: 'another no fect reached successfully!' });
+})
+
 module.exports = app;
