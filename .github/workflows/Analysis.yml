@@ -46,7 +46,7 @@ jobs:
             BRANCH_NAME=${GITHUB_BASE_REF}
           else
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-          fi
+            fi
             echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
       
       - name: Scanning the project with sonarQube scanner
@@ -66,7 +66,7 @@ jobs:
       - name: identify SonarQube Quality Gate status
         run: |
           echo "Identifying quality gate status..."
-            STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}"&pullRequest=$BRANCH_NAME -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
+            STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}"&pullRequest=${{steps.set_branch.outputs.set_branch}} -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
              
             if [ "$STATUS" != "OK" ]; then
               echo "SonarQube Quality Gate Failed !!"
