@@ -52,7 +52,7 @@ jobs:
             -Dsonar.test.inclusions=test/index.test.js \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.login=${{secrets.PROJECT_TOKEN}} \
-            -Dsonar.branch.name=${{ github.event.pull_request.head.ref }}
+            -Dsonar.branch.name=${{ github.head.ref }}
 
       - name: identify SonarQube Quality Gate status
         run: |
