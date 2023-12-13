@@ -66,11 +66,21 @@ jobs:
       - name: identify SonarQube Quality Gate status
         run: |
           echo "Identifying quality gate status..."
-            STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}"&pullRequest=${{steps.set_branch.outputs.set_branch}} -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
-            echo "status $STATUS"
+            #STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
+            
             if [ "$STATUS" != "OK" ]; then
               echo "SonarQube Quality Gate Failed !!"
               exit 1
               else
                 echo "SonarQube Quality Gate passed !!" 
               fi
+              - name: HTTP Request to SonarQube
+              id: sonarqube_request
+              uses: actions/http-request@v2
+              with:
+                url: https://sonarqube.kcspl.in/api/qualitygates/project_status?projectKey=Ecard_Ecard&pullRequest=${{ steps.pr_number.outputs.pr_number }}
+                headers: |
+                  ${{ secrets.YOUR_AUTHORIZATION_HEADERS }}  # Replace with your actual authorization headers
+      
+            - name: Output SonarQube Response
+              run: echo "${{ steps.sonarqube_request.outputs.body }}"    

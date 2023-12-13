@@ -62,4 +62,12 @@ app.get('/api/test', (req, res) => {
   res.status(200).json({ message: 'another test reached successfully!' });
 })
 
+app.get('/shubham', (req, res) => {
+  res.status(200).json({ message: 'test reached successfully!' });
+})
+
+app.get('/keertik', (req, res) => {
+  res.status(200).json({ message: 'another test reached successfully!' });
+})
+
 module.exports = app;
