@@ -3,11 +3,11 @@ name: Check testcases and quality gate status
 on:
   push:
     branches:
-      - '*'
-  
-  pull_request: 
+      - "*"
+
+  pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   sonarqube-analysis:
@@ -32,15 +32,15 @@ jobs:
 
       - name: Check test exit code
         run: |
-            if [ $exit_code -ne 0 ]; then
-                echo "Test cases failed !! Exiting..."
-                exit 1
-              else
-                echo "cheers up, all Test cases are passed !!"
-              fi
+          if [ $exit_code -ne 0 ]; then
+              echo "Test cases failed !! Exiting..."
+              exit 1
+            else
+              echo "cheers up, all Test cases are passed !!"
+            fi
 
-      - name: Set branch name        
-        id: set_branch        
+      - name: Set branch name
+        id: set_branch
         run: |
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
             BRANCH_NAME=${GITHUB_BASE_REF}
@@ -48,7 +48,7 @@ jobs:
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
             fi
             echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-      
+
       - name: Scanning the project with sonarQube scanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -64,23 +64,23 @@ jobs:
             -Dsonar.branch.name=$BRANCH_NAME
 
       - name: identify SonarQube Quality Gate status
+        id: quality_gate_status
         run: |
           echo "Identifying quality gate status..."
-            #STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
-            
-            if [ "$STATUS" != "OK" ]; then
-              echo "SonarQube Quality Gate Failed !!"
-              exit 1
-              else
-                echo "SonarQube Quality Gate passed !!" 
-              fi
-              - name: HTTP Request to SonarQube
-              id: sonarqube_request
-              uses: actions/http-request@v2
-              with:
-                url: https://sonarqube.kcspl.in/api/qualitygates/project_status?projectKey=Ecard_Ecard&pullRequest=${{ steps.pr_number.outputs.pr_number }}
-                headers: |
-                  ${{ secrets.YOUR_AUTHORIZATION_HEADERS }}  # Replace with your actual authorization headers
-      
-            - name: Output SonarQube Response
-              run: echo "${{ steps.sonarqube_request.outputs.body }}"    
+          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+            BRANCH_NAME=${GITHUB_BASE_REF}
+          else
+            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+          STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}&branch=${BRANCH_NAME}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
+          echo "Quality Gate Status for branch $BRANCH_NAME: $STATUS"
+          echo "QUALITY_GATE_STATUS=$STATUS" >> $GITHUB_ENV
+
+      - name: Check Quality Gate status
+        run: |
+          if [ "$QUALITY_GATE_STATUS" != "OK" ]; then
+            echo "SonarQube Quality Gate Failed for branch $BRANCH_NAME!!"
+            exit 1
+          else
+            echo "SonarQube Quality Gate passed for branch $BRANCH_NAME!!"
+          fi
