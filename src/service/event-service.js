@@ -21,26 +21,7 @@ const events = (s_id, result) => {
         result(null, response.data)
 
     }).catch((error) => {
-        //If there is a problem with internet connection
-        // if (error.code == 'ENOTFOUND') {
-        //     result((error, { errorMsg: 'Could not reach , Please check your internet connection ' }), null)
-        // }
-        // //If user enter Invalid AccessKey
-        // else if (error.code == 'ERR_BAD_REQUEST' && error.response.status == 400) {
-        //     result((error, { errorMsg: 'Invalid Host name , Please check !!' }), null)
-        // }
-        // //If user enter Invalid Accesskey
-        // else if (error.code == 'ERR_BAD_REQUEST' && error.response.status == 403) {
-        //     result((error, { errorMsg: 'Invalid Access key , Please check !!' }), null)
-        // }
-        // //If Montly subscription is expired 
-        // else if (error.code == 'ERR_BAD_REQUEST' && error.response.status == 429) {
-        //     result((error, { errorMsg: 'Your Free Api usege is end , Please upgrade your plan !!' }))
-        // }
-        
-        // else {
-            result(error.message)
-        //}
+        result(error.message)
     });
 }
 
