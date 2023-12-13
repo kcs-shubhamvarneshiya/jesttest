@@ -66,7 +66,7 @@ jobs:
       - name: identify SonarQube Quality Gate status
         run: |
           echo "Identifying quality gate status..."
-            STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
+            STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}"&pullRequest=$BRANCH_NAME -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
              
             if [ "$STATUS" != "OK" ]; then
               echo "SonarQube Quality Gate Failed !!"
