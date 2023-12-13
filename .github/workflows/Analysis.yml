@@ -41,13 +41,18 @@ jobs:
 
       - name: Set branch name        
         id: set_branch        
-        run: echo "BRANCH_NAME=$(echo $GITHUB_REF | awk 'BEGIN {FS="/"} {print $3}')" >> $GITHUB_ENV        
-
+        run: |
+          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+            BRANCH_NAME=${GITHUB_BASE_REF}
+          else
+            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+            echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+      
       - name: Scanning the project with sonarQube scanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo "Pull Request number is ${{ github.event.pull_request.head.ref }}"
           npm install -g sonarqube-scanner
           sonar-scanner \
             -Dsonar.host.url=${{secrets.SERVER_URL}} \
