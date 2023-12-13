@@ -39,6 +39,10 @@ jobs:
                 echo "cheers up, all Test cases are passed !!"
               fi
 
+      - name: Set branch name        
+        id: set_branch        
+        run: echo "BRANCH_NAME=$(echo $GITHUB_REF | awk 'BEGIN {FS="/"} {print $3}')" >> $GITHUB_ENV        
+
       - name: Scanning the project with sonarQube scanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -52,7 +56,7 @@ jobs:
             -Dsonar.test.inclusions=test/index.test.js \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.login=${{secrets.PROJECT_TOKEN}} \
-            -Dsonar.branch.name=${{ github.head.ref }}
+            -Dsonar.branch.name=$BRANCH_NAME
 
       - name: identify SonarQube Quality Gate status
         run: |
