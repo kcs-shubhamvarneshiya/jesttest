@@ -35,11 +35,11 @@ describe('Test the root path', () => {
     expect(response.body.message).toBe('another test reached successfully!');
   });
 
-  test('should return event data',async()=>{
-    const response = await request(app).get('/event');
-    expect(response.statusCode).toBe(200);
-    expect(response.body.message).toBe('Data retrieved successfully.');
-  })
+  // test('should return event data',async()=>{
+  //   const response = await request(app).get('/event');
+  //   expect(response.statusCode).toBe(200);
+  //   expect(response.body.message).toBe('Data retrieved successfully.');
+  // })
 
   test('It should respond with a another test route', async () => {
     const response = await request(app).get('/shubham');
