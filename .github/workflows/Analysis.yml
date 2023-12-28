@@ -3,11 +3,11 @@ name: Check testcases and quality gate status
 on:
   push:
     branches:
-      - "feature/*"
+      - "*"
 
   pull_request:
     branches:
-      - "feature/*"
+      - "*"
 
 jobs:
   sonarqube-analysis:
@@ -35,45 +35,51 @@ jobs:
           if [ $exit_code -ne 0 ]; then
               echo "Test cases failed !! Exiting..."
               exit 1
-            else
+          else
               echo "cheers up, all Test cases are passed !!"
-            fi
+          fi
 
       - name: Set branch name
         id: set_branch
         run: |
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            BRANCH_NM=${GITHUB_BASE_REF}
+          BRANCH_NM=${GITHUB_HEAD_REF}
           else
-            BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
+          BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
           fi
-            echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
-
+          echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
+            
       - name: Scanning the project with sonarQube scanner
         run: |
-          echo "Branch Name  : $BRANCH_NAME"
+          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+            BRANCH_NAME=${GITHUB_HEAD_REF}
+          else
+            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+            echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+            
           npm install -g sonarqube-scanner
-          sonar-scanner \
-            -Dsonar.host.url=${{secrets.SERVER_URL}} \
-            -Dsonar.projectKey=${{secrets.PROJECT_KEY}} \
-            -Dsonar.sources=./src \
-            -Dsonar.test.inclusions=test/index.test.js \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-            -Dsonar.login=${{secrets.PROJECT_TOKEN}} \
-            -Dsonar.branch.name=$BRANCH_NAME
+            sonar-scanner \
+              -Dsonar.host.url=${{secrets.SERVER_URL}} \
+              -Dsonar.projectKey=${{secrets.PROJECT_KEY}} \
+              -Dsonar.sources=./src \
+              -Dsonar.test.inclusions=test/index.test.js \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+              -Dsonar.login=${{secrets.PROJECT_TOKEN}} \
+              -Dsonar.branch.name=$BRANCH_NAME
 
       - name: identify SonarQube Quality Gate status
         id: quality_gate_status
         run: |
           echo "Identifying quality gate status..."
+          
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            BRANCH_NAME=${GITHUB_BASE_REF}
+            BRANCH_NAME=${GITHUB_HEAD_REF}
           else
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           fi
+            echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
-          echo "Branch Name :  $BRANCH_NAME"
-          
           STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}&branch=${BRANCH_NAME}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
           echo "Quality Gate Status for branch $BRANCH_NAME: $STATUS"
           echo "QUALITY_GATE_STATUS=$STATUS" >> $GITHUB_ENV
