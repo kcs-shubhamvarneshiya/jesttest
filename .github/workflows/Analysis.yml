@@ -3,11 +3,11 @@ name: Check testcases and quality gate status
 on:
   push:
     branches:
-      - "*"
+      - "feature/*"
 
   pull_request:
     branches:
-      - "*"
+      - "feature/*"
 
 jobs:
   sonarqube-analysis:
