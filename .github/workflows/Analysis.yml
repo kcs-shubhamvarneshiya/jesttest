@@ -3,11 +3,11 @@ name: Check testcases and quality gate status
 on:
   push:
     branches:
-      - "feature/*"
+      - "*"
 
   pull_request:
     branches:
-      - "feature/*"
+      - "*"
 
 jobs:
   sonarqube-analysis:
@@ -48,7 +48,9 @@ jobs:
             BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
           fi
             echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
-
+          
+          echo "Branch name is : $BRANCH_NAME"
+          
       - name: Scanning the project with sonarQube scanner
         run: |
           echo "Branch Name  : $BRANCH_NAME"
