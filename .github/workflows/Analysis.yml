@@ -39,17 +39,11 @@ jobs:
               echo "cheers up, all Test cases are passed !!"
             fi
 
-           BNAME=$(echo $GITHUB_REF)
-           echo "Branch name : $BNAME"
-           echo "BRANCH_NAME=$BNAME" >> $GITHUB_ENV
-
-        env:
-          BRANCH_NAME: $BNAME
-
       - name: Scanning the project with sonarQube scanner
         run: |
-          echo "Branch Name  : $BRANCH_NAME"
-
+          BRANCH_NE=$(echo ${GITHUB_REF#refs/heads/})
+          echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
+          
           npm install -g sonarqube-scanner
 
           sonar-scanner \
@@ -65,8 +59,10 @@ jobs:
         id: quality_gate_status
         run: |
           echo "Identifying quality gate status..."
-          echo "Branch Name :  $BRANCH_NAME"
-
+          
+          BRANCH_NE=$(echo ${GITHUB_REF#refs/heads/})
+          echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
+          
           STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}&branch=${BRANCH_NAME}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
           echo "Quality Gate Status for branch $BRANCH_NAME: $STATUS"
           echo "QUALITY_GATE_STATUS=$STATUS" >> $GITHUB_ENV
