@@ -38,6 +38,7 @@ jobs:
             else
               echo "cheers up, all Test cases are passed !!"
             fi
+           echo "Branch name : ${GITHUB_REF#refs/heads/}"
             
         env:
           BRANCH_NAME : ${GITHUB_REF#refs/heads/}
