@@ -1,9 +1,8 @@
-name: Check testcases and quality gate status
-
+#name: Check testcases and quality gate status
 on:
   push:
     branches:
-    - "feature/kcs-keertikpatel/*"
+    - "*"
 
   pull_request:
     branches:
