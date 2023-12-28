@@ -43,16 +43,15 @@ jobs:
         id: set_branch
         run: |
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            BRANCH_NAME=${GITHUB_BASE_REF}
+            BRANCH_NM=${GITHUB_BASE_REF}
           else
-            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-            fi
-            echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+            BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+            echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
 
       - name: Scanning the project with sonarQube scanner
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
+          echo "Branch Name  : $BRANCH_NAME"
           npm install -g sonarqube-scanner
           sonar-scanner \
             -Dsonar.host.url=${{secrets.SERVER_URL}} \
@@ -72,6 +71,9 @@ jobs:
           else
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           fi
+
+          echo "Branch Name :  $BRANCH_NAME"
+          
           STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}&branch=${BRANCH_NAME}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
           echo "Quality Gate Status for branch $BRANCH_NAME: $STATUS"
           echo "QUALITY_GATE_STATUS=$STATUS" >> $GITHUB_ENV
