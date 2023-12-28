@@ -12,3 +12,4 @@ jobs:
       - name: Print Pull Request Branch
         run: |
           echo "Branch associated with the pull request is ${GITHUB_HEAD_REF}"
+          echo "Good Hello world.."
