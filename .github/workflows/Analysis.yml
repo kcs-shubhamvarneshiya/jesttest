@@ -52,7 +52,7 @@ jobs:
       - name: Scanning the project with sonarQube scanner
         run: |
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            BRANCH_NAME=${GITHUB_BASE_REF}
+            BRANCH_NAME=${GITHUB_HEAD_REF}
           else
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           fi
@@ -74,7 +74,7 @@ jobs:
           echo "Identifying quality gate status..."
           
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            BRANCH_NAME=${GITHUB_BASE_REF}
+            BRANCH_NAME=${GITHUB_HEAD_REF}
           else
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           fi
