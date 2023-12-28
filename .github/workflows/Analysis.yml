@@ -39,18 +39,19 @@ jobs:
               echo "cheers up, all Test cases are passed !!"
             fi
 
-           echo "BNAME = ${GITHUB_REF#refs/heads/}"
+           BNAME=$(echo $GITHUB_REF#refs/heads/)
            echo "Branch name : $BNAME"
-          
+           echo "BRANCH_NAME=$BNAME" >> $GITHUB_ENV
+
         env:
-          BRANCH_NAME : $BNAME
+          BRANCH_NAME: $BNAME
 
       - name: Scanning the project with sonarQube scanner
         run: |
           echo "Branch Name  : $BRANCH_NAME"
 
           npm install -g sonarqube-scanner
-          
+
           sonar-scanner \
             -Dsonar.host.url=${{secrets.SERVER_URL}} \
             -Dsonar.projectKey=${{secrets.PROJECT_KEY}} \
