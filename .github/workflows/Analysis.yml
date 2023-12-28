@@ -41,27 +41,44 @@ jobs:
       - name: Set branch name
         id: set_branch
         run: |
-            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-            echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-
+          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+            BRANCH_NM=${GITHUB_HEAD_REF}
+          else
+            BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+          echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
+            
       - name: Scanning the project with sonarQube scanner
         run: |
-          npm install -g sonarqube-scanner
-
-          sonar-scanner \
-            -Dsonar.host.url=${{secrets.SERVER_URL}} \
-            -Dsonar.projectKey=${{secrets.PROJECT_KEY}} \
-            -Dsonar.sources=./src \
-            -Dsonar.test.inclusions=test/index.test.js \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-            -Dsonar.login=${{secrets.PROJECT_TOKEN}} \
-            -Dsonar.branch.name=$BRANCH_NAME
+            if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+              BRANCH_NM=${GITHUB_HEAD_REF}
+            else
+              BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
+            fi
+            echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
+            
+            npm install -g sonarqube-scanner
+            sonar-scanner \
+              -Dsonar.host.url=${{secrets.SERVER_URL}} \
+              -Dsonar.projectKey=${{secrets.PROJECT_KEY}} \
+              -Dsonar.sources=./src \
+              -Dsonar.test.inclusions=test/index.test.js \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+              -Dsonar.login=${{secrets.PROJECT_TOKEN}} \
+              -Dsonar.branch.name=$BRANCH_NAME
 
       - name: identify SonarQube Quality Gate status
         id: quality_gate_status
         run: |
           echo "Identifying quality gate status..."
           
+          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+              BRANCH_NM=${GITHUB_HEAD_REF}
+          else
+              BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
+          fi
+          echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
+
           STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}&branch=${BRANCH_NAME}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
           echo "Quality Gate Status for branch $BRANCH_NAME: $STATUS"
           echo "QUALITY_GATE_STATUS=$STATUS" >> $GITHUB_ENV
