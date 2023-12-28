@@ -38,12 +38,10 @@ jobs:
             else
               echo "cheers up, all Test cases are passed !!"
             fi
+            
+        env:
+          BRANCH_NAME : ${GITHUB_REF#refs/heads/}
 
-      - name: Set branch name
-        id: set_branch
-        run: |
-          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/}) >> $GITHUB_ENV
-          echo "Branch Name is $BRANCH_NAME"
 
       - name: Scanning the project with sonarQube scanner
         run: |
