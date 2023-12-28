@@ -39,7 +39,7 @@ jobs:
               echo "cheers up, all Test cases are passed !!"
             fi
 
-           BNAME=$(echo $GITHUB_REF#refs/heads/)
+           BNAME=$(echo $GITHUB_REF)
            echo "Branch name : $BNAME"
            echo "BRANCH_NAME=$BNAME" >> $GITHUB_ENV
 
