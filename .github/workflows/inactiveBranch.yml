@@ -18,9 +18,11 @@ jobs:
           git fetch --all --prune
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
             if [[ "$(git log -n 1 --since='2 days ago' "$branch" | wc -l)" -eq 0 ]]; then
-              git branch --delete $branch
+              git push origin --delete $branch
+              echo "Branch $branch Deleted !!"
             fi
           done
+
 
       - name: List remaining branches
         run: |
