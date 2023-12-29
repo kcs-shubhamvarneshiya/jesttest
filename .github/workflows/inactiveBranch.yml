@@ -15,14 +15,16 @@ jobs:
 
       - name: List inactive branches
         run: |
-          # Get the current date in YYYY-MM-DD format
-          CURRENT_DATE=$(date +%Y-%m-%d)
-          echo "Current date: $CURRENT_DATE"
-          # Iterate through branches
-          for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
-            # Check if the branch is older than 15 days
-            LAST_COMMIT_DATE=$(git log -n 1 --format=%cd --date=format:'%Y-%m-%d' "$branch")
-            if [[ $(date -d "$LAST_COMMIT_DATE" +%s) -lt $(date -d "$CURRENT_DATE -2 days" +%s) ]]; then
-              echo "Branch '$branch' was last active on '$LAST_COMMIT_DATE'."
-            fi
+          # Get the current date and calculate 2 days ago in YYYY-MM-DD format
+          CURRENT_DATE=$(date -u +"%Y-%m-%d")
+          TWO_DAYS_AGO=$(date -u -d "2 days ago" +"%Y-%m-%d")
+
+          # Fetch all branches
+          git fetch --all --prune
+
+          # List branches inactive for the last 2 days
+          git for-each-ref --format='%(committerdate:short) %(refname:short)' refs/heads | while read -r date branch; do
+              if [ "$(date -d "$date" +%Y-%m-%d)" \< "$TWO_DAYS_AGO" ]; then
+                  echo "$branch"
+              fi
           done
