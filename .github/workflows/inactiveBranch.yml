@@ -18,7 +18,10 @@ jobs:
           # Get the current date and calculate 2 days ago in YYYY-MM-DD format
           CURRENT_DATE=$(date -u +"%Y-%m-%d")
           TWO_DAYS_AGO=$(date -u -d "2 days ago" +"%Y-%m-%d")
-
+          
+          echo "Cureent Date :  $CURRENT_DATE "
+          echo "TWO_DAYS_AGO : $TWO_DAYS_AGO "
+          
           # Fetch all branches
           git fetch --all --prune
 
