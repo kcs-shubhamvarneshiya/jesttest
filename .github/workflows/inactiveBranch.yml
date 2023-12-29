@@ -1,9 +1,10 @@
 name: List Inactive Branches
 
 on:
-  schedule:
-    - cron : '*/1 * * * *'
-    
+  push:
+    branches:
+      - "*"
+
 jobs:
   list-inactive-branches:
     runs-on: ubuntu-latest
