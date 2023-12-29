@@ -1,12 +1,13 @@
 name: List Inactive Branches
 
 on:
-   push:
-    branches:
-     - "*"
+    push:
+      branches:
+        - "*"
 
 jobs:
   list-inactive-branches:
+    
     runs-on: ubuntu-latest
 
     steps:
