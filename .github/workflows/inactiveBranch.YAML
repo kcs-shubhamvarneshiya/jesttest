@@ -2,7 +2,7 @@ name: List Inactive Branches
 
 on:
     schedule:
-        cron : '1 * * * *'
+        cron : '*/1 * * * *'
     
 jobs:
   list-inactive-branches:
