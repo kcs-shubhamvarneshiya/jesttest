@@ -18,7 +18,7 @@ jobs:
           git fetch --all --prune
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
             if [[ "$(git log -n 1 --since='2 days ago' "$branch" | wc -l)" -eq 0 ]]; then
-              git push origin --delete "$branch"
+              git push https://github.com/$GITHUB_REPOSITORY --delete "$branch" --quiet --access-token ${{secrets.ACCESS_TOKEN}}
             fi
           done
 
