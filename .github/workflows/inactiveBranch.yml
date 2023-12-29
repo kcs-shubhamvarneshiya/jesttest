@@ -16,18 +16,19 @@ jobs:
       - name : Setup configuration
         run: |
           git config --global user.email "shubham.varneshiya@kcsitglobal.com"
-          git config --global user.name "kcs-shubhamvarneshiya"  
+          git config --global user.name "kcs-shubhamvarneshiya" 
+          
+          echo "git config --global user.email"
 
       - name: Fetch all branches
         run: |
           git fetch --all --prune
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
             if [[ "$(git log -n 1 --since='2 days ago' "$branch" | wc -l)" -eq 0 ]]; then
-              git push origin --delete "$branch" --quiet --access-token ${{secrets.ACCESS_TOKEN}}
+              git push origin --delete "$branch"
               echo "Branch $branch Deleted !!"
             fi
           done
-
 
       - name: List remaining branches
         run: |
