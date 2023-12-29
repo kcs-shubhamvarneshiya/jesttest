@@ -16,7 +16,7 @@ jobs:
       - name : Setup configuration
         run: |
           git config --global user.email "shubham.varneshiya@kcsitglobal.com"
-          git config --global user.name "shubhamkcs"  
+          git config --global user.name "kcs-shubhamvarneshiya"  
 
       - name: Fetch all branches
         run: |
