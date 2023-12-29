@@ -13,23 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: List inactive branches
+      - name: Fetch all branches
         run: |
-          # Get the current date and calculate 2 days ago in YYYY-MM-DD format
-          CURRENT_DATE=$(date -u +"%Y-%m-%d")
-          TWO_DAYS_AGO=$(date -u -d "2 days ago" +"%Y-%m-%d")
-          
-          echo "Cureent Date :  $CURRENT_DATE "
-          echo "TWO_DAYS_AGO : $TWO_DAYS_AGO "
-          
-          # Fetch all branches
           git fetch --all --prune
-
-          # List branches inactive for the last 2 days
-          git for-each-ref --format='%(committerdate:short) %(refname:short)' refs/heads | while read -r date branch; do
-              if [ "$(date -d "$date" +%Y-%m-%d)" \< "$TWO_DAYS_AGO" ]; then
-                  echo "$branch"
-              fi
+          git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
+            if [[ "$(git log -n 1 --since='2 days ago' "$branch" | wc -l)" -eq 0 ]]; then
+              git push origin --delete "$branch"
+            fi
           done
 
-          echo "$branch"
+      - name: List remaining branches
+        run: |
+          git branch -a
