@@ -1,4 +1,4 @@
-name: List Inactive Branches
+name: Delete Remote and Local Branch
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - "*"
 
 jobs:
-  list-inactive-branches:
+  delete-branches:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,12 +18,30 @@ jobs:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
           git fetch --all --prune
+
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
             if [[ "$(git log -n 1 --since='4 days ago' "$branch" | wc -l)" -eq 0 ]]; then
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
               git config --global user.name "shubhamkcs"
-              git push origin --delete "$branch"
-              echo "Branch $branch Deleted !!"
+              
+              # Check if the branch exists in the remote before attempting to delete
+              if git rev-parse --quiet --verify "$branch" > /dev/null; then
+                git push origin --delete "$branch"
+                echo "Remote branch '$branch' deleted."
+                
+                # Extract local branch name from remote reference
+                local_branch=$(echo "$branch" | sed 's|refs/remotes/origin/||')
+                
+                # Check if the local branch exists before attempting to delete
+                if git show-ref --quiet --verify "refs/heads/$local_branch"; then
+                  git branch -d "$local_branch"
+                  echo "Local branch '$local_branch' deleted."
+                else
+                  echo "Local branch '$local_branch' does not exist."
+                fi
+              else
+                echo "Remote branch '$branch' does not exist."
+              fi
             fi
           done
 
