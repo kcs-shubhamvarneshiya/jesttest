@@ -18,13 +18,14 @@ jobs:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
           git fetch --prune --unshallow
-          cutoff_date=$(date --date='3 days ago' +%Y-%m-%d)
+          cutoff_date=$(date --date='15 days ago' +%Y-%m-%d)
           git for-each-ref --format='%(refname:short) %(committerdate:short)' refs/remotes/origin | \
             while read branch commit_date; do
               if [[ "$commit_date" < "$cutoff_date" ]]; then
                branch=$(echo "$branch" | sed 's/origin\///')
-               echo "modified branch name is : $branch"
+               if[$branch == "main"]
                git push origin --delete $branch
+               echo "$branch is deleted successfully!!"
               fi
             done
 
