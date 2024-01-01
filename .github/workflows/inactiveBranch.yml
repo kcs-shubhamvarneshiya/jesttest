@@ -13,11 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Fetch all branches
+      - name: Fetch all branches from the remote
         env:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
-          git fetch origin --prune +refs/remotes/*:refs/remotes/*
+          git fetch origin --prune +refs/heads/*:refs/remotes/origin/*
 
       - name: List branches before deletion
         run: |
@@ -27,7 +27,7 @@ jobs:
         env:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
-          git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
+          git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes/origin | while read branch date; do
             if [[ "$(git log -n 1 --since='4 days ago' "$branch" | wc -l)" -eq 0 ]]; then
               echo "Processing branch: $branch"
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
