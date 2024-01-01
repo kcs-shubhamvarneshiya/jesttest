@@ -33,11 +33,15 @@ jobs:
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
               git config --global user.name "shubhamkcs"
 
-              git push origin --delete -f "$branch"
-
-              local_branch=$(echo "$branch" | sed 's|refs/remotes/origin/||')
-              git branch -D "$local_branch"
-              echo "Deleted both remote and local branch: $branch"
+              # Check if the branch still exists on the remote before attempting to delete
+              if git rev-parse --quiet --verify "$branch" > /dev/null; then
+                git push origin --delete -f "$branch"
+                local_branch=$(echo "$branch" | sed 's|refs/remotes/origin/||')
+                git branch -D "$local_branch"
+                echo "Deleted both remote and local branch: $branch"
+              else
+                echo "Remote branch '$branch' no longer exists on the remote repository."
+              fi
             fi
           done
 
