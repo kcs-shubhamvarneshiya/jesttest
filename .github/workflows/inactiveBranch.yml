@@ -17,12 +17,13 @@ jobs:
         env:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
-          git fetch origin --prune
+          git branch -a 
           
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
             if [[ "$(git log -n 1 --since='3 days ago' "$branch" | wc -l)" -eq 0 ]]; then
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
               git config --global user.name "shubhamkcs"
+              git branch -D "$branch"
               git push origin --delete $branch
               echo "Branch is : $branch"
             fi
