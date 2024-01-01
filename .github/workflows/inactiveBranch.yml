@@ -24,7 +24,7 @@ jobs:
               if [[ "$commit_date" < "$cutoff_date" ]]; then
                branch=$(echo "$branch" | sed 's/origin\///')
                echo "modified branch name is : $branch"
-               #git push origin --delete $branch
+               git push origin --delete $branch
               fi
             done
 
