@@ -18,7 +18,7 @@ jobs:
           git fetch --all --prune
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
             if [[ "$(git log -n 1 --since='4 days ago' "$branch" | wc -l)" -eq 0 ]]; then
-              git branch -D "$branch"
+              git branch -D origin/"$branch"
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
               git config --global user.name "shubhamkcs"
               git push origin --delete "$branch" 
