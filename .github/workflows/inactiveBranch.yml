@@ -24,13 +24,13 @@ jobs:
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
               git config --global user.name "shubhamkcs"
               
+              # Extract local branch name from remote reference
+              local_branch=$(echo "$branch" | sed 's|refs/remotes/origin/||')
+              
               # Check if the branch exists in the remote before attempting to delete
               if git rev-parse --quiet --verify "$branch" > /dev/null; then
                 git push origin --delete "$branch"
                 echo "Remote branch '$branch' deleted."
-                
-                # Extract local branch name from remote reference
-                local_branch=$(echo "$branch" | sed 's|refs/remotes/origin/||')
                 
                 # Check if the local branch exists before attempting to delete
                 if git show-ref --quiet --verify "refs/heads/$local_branch"; then
