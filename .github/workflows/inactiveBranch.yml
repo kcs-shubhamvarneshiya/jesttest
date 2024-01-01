@@ -22,7 +22,7 @@ jobs:
             if [[ "$(git log -n 1 --since='4 days ago' "$branch" | wc -l)" -eq 0 ]]; then
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
               git config --global user.name "shubhamkcs"
-              git push -d origin +:refs/heads/"$branch"
+              git push -d +:refs/heads/"$branch"
               echo "Branch $branch Deleted !!"
             fi
           done
