@@ -22,7 +22,6 @@ jobs:
           git for-each-ref --format='%(refname:short) %(committerdate:short)' refs/remotes/origin | \
             while read branch commit_date; do
               if [[ "$commit_date" < "$cutoff_date" ]]; then
-                git push origin --delete $branch
                 echo "Deleted branch $branch"
               fi
             done
