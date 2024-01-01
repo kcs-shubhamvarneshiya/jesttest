@@ -20,31 +20,34 @@ jobs:
           git fetch origin --prune +refs/remotes/*:refs/remotes/*
           
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
-            if [[ "$(git log -n 1 --since='3 days ago' "$branch" | wc -l)" -eq 0 ]]; then
+            echo "Processing branch: $branch"
+            if [[ "$(git log -n 1 --since='4 days ago' "$branch" | wc -l)" -eq 0 ]]; then
               git config --global user.email "shubham.varneshiya@kcsitglobal.com"
               git config --global user.name "shubhamkcs"
               
               # Extract local branch name from remote reference
               local_branch=$(echo "$branch" | sed 's|refs/remotes/origin/||')
               
-              # Check if the branch exists in the remote before attempting to delete
               if git rev-parse --quiet --verify "$branch" > /dev/null; then
-                git push origin --delete "$branch"
-                echo "Remote branch '$branch' deleted."
-                
-                # Check if the local branch exists before attempting to delete
-                if git show-ref --quiet --verify "refs/heads/$local_branch"; then
-                  git branch -d "$local_branch"
-                  echo "Local branch '$local_branch' deleted."
+                echo "Branch '$branch' exists in the remote repository."
+                git push origin --delete -f "$branch" 2>&1 | tee delete_branch.log
+                if [ $? -eq 0 ]; then
+                  echo "Remote branch '$branch' deleted successfully."
+                  if git show-ref --quiet --verify "refs/heads/$local_branch"; then
+                    echo "Local branch '$local_branch' exists."
+                    git branch -d "$local_branch"
+                    echo "Local branch '$local_branch' deleted."
+                  else
+                    echo "Local branch '$local_branch' does not exist."
+                  fi
                 else
-                  echo "Local branch '$local_branch' does not exist."
+                  echo "Error deleting remote branch '$branch'. Check delete_branch.log for details."
                 fi
               else
                 echo "Remote branch '$branch' does not exist."
               fi
             fi
           done
-
       - name: List remaining branches
         run: |
           git branch -a
