@@ -17,7 +17,7 @@ jobs:
         env:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
-          git fetch --all --prune +refs/remotes/*:refs/remotes/*
+          git fetch origin --prune +refs/remotes/*:refs/remotes/*
           
           git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
             if [[ "$(git log -n 1 --since='4 days ago' "$branch" | wc -l)" -eq 0 ]]; then
@@ -48,3 +48,4 @@ jobs:
       - name: List remaining branches
         run: |
           git branch -a
+
