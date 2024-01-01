@@ -17,20 +17,16 @@ jobs:
         env:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
-          git fetch --all
-          git branch -a
-          
-          git for-each-ref --format='%(refname:short) %(committerdate:iso)' refs/remotes | while read branch date; do
-            if [[ "$(git log -n 1 --since='3 days ago' "$branch" | wc -l)" -eq 0 ]]; then
-              git config --global user.email "shubham.varneshiya@kcsitglobal.com"
-              git config --global user.name "shubhamkcs"
-              git branch -D "$branch"
-              git push remotes/origin --delete $branch
-              echo "Branch is : $branch"
-            fi
-          done
+          git fetch --prune --unshallow
+          cutoff_date=$(date --date='3 days ago' +%Y-%m-%d)
+          git for-each-ref --format='%(refname:short) %(committerdate:short)' refs/remotes/origin | \
+            while read branch commit_date; do
+              if [[ "$commit_date" < "$cutoff_date" ]]; then
+                git push origin --delete $branch
+                echo "Deleted branch $branch"
+              fi
+            done
 
       - name: List remaining branches
         run: |
           git branch -a
-
