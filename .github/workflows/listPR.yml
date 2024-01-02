@@ -21,8 +21,9 @@ jobs:
           owner: "kcs-shubhamvarneshiya"
           repo: "jesttest"
           state: open 
+          token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
 
       - name: Display Open Pull Requests
         run: |
           echo "Open Pull Requests:"
-          echo "${{ steps.get_pulls.outputs.data }}"  # Display the fetched open pull requests
+          echo "${{ steps.get_pulls.outputs.data }}" 
