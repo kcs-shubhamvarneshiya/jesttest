@@ -1,9 +1,8 @@
-name: Delete Remote and Local Branch
+name: Delete In active branches
 
 on:
-  push:
-    branches:
-      - "*"
+  schedule:
+    - cron: "59 23 * * *" #This Job will trigger everynight at 11:59:00 PM
 
 jobs:
   delete-branches:
@@ -13,22 +12,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Fetch all branches (forcefully)
+      - name: Delete Inactive Branches
         env:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
           git fetch --prune --unshallow
+
           cutoff_date=$(date --date='15 days ago' +%Y-%m-%d)
+
           git for-each-ref --format='%(refname:short) %(committerdate:short)' refs/remotes/origin | \
             while read branch commit_date; do
-              if [[ "$commit_date" < "$cutoff_date" ]]; then
-               branch=$(echo "$branch" | sed 's/origin\///')
-               if[$branch == "main"]
-               git push origin --delete $branch
-               echo "$branch is deleted successfully!!"
+              branch=$(echo "$branch" | sed 's/origin\///')
+              if [[ "$commit_date" < "$cutoff_date" ]] && \
+                 [[ "$branch" != "main" && "$branch" != "QA" && "$branch" != "stage" ]]; then 
+                 git push origin --delete "$branch"
+                 echo "$branch is deleted successfully!!"
               fi
             done
 
       - name: List remaining branches
         run: |
+          echo "********* Remaining branches *********"
           git branch -a
