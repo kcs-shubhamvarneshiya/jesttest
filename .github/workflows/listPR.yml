@@ -1,4 +1,4 @@
-name: Fetch Open Pull Requests
+name: Close Stale Pull Requests
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - "*"
 
 jobs:
-  fetch-pull-requests:
+  close-stale-pr:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,15 +15,8 @@ jobs:
 
       - name: Fetch Open Pull Requests
         id: get_pulls
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/:owner/:repo/pulls
-          owner: "kcs-shubhamvarneshiya"
-          repo: "jesttest"
-          state: open 
-          token: ${{secrets.PAT_WITH_PR}}
-
-      - name: Display Open Pull Requests
         run: |
-          echo "Open Pull Requests:"
-          echo "${{ steps.get_pulls.outputs.data[0].body }}" 
+          PR_LIST=$(curl -s -H "Authorization: Bearer ${{secrets.PAT_WITH_PR}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=open")
+          for pr in $(echo "${PR_LIST}" | jq -r '.[] | select(.created_at <= "15 days ago" and .state == "open" and .user.login != "dependabot[bot]") | .number'); do
+            curl -X PATCH -H "Authorization: Bearer ${{secrets.PAT_WITH_PR}}" -H "Content-Type: application/json" -d '{"state":"closed"}' "https://api.github.com/repos/${{ github.repository }}/pulls/$pr"
+          done
