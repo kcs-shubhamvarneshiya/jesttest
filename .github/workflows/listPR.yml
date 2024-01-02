@@ -26,4 +26,4 @@ jobs:
       - name: Display Open Pull Requests
         run: |
           echo "Open Pull Requests:"
-          echo "${{ steps.get_pulls.outputs.data }}" 
+          echo "${{ steps.get_pulls.outputs.data[0].body }}" 
