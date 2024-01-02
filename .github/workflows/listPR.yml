@@ -21,7 +21,7 @@ jobs:
           owner: "kcs-shubhamvarneshiya"
           repo: "jesttest"
           state: open 
-          token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
+          token: ${{secrets.PAT_WITH_PR}}
 
       - name: Display Open Pull Requests
         run: |
