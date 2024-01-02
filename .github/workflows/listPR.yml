@@ -18,9 +18,9 @@ jobs:
         uses: octokit/request-action@v2.x
         with:
           route: GET /repos/:owner/:repo/pulls
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.repository }}
-          state: open # Fetch only open pull requests
+          owner: "kcs-shubhamvarneshiya"
+          repo: "jesttest"
+          state: open 
 
       - name: Display Open Pull Requests
         run: |
