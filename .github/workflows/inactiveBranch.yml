@@ -1,49 +1,35 @@
-name: Delete Inactive Merged Branches
- 
+name: Delete In active branches
+
 on:
-  push:
-    branches: 
-     - "*"
- 
+  schedule:
+    - cron: "59 23 * * *" #This Job will trigger everynight at 11:59:00 PM
+
 jobs:
-  delete-inactive-merged-branches:
+  delete-branches:
     runs-on: ubuntu-latest
- 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
- 
-      - name: Delete Inactive Merged Branches
+
+      - name: Delete Inactive Branches
         env:
-          ACTIONS_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
           git fetch --prune --unshallow
- 
-          # Set the cutoff date for inactive branches (e.g., 30 days ago)
-          cutoff_date=$(date --date='30 days ago' +%Y-%m-%d)
- 
-          # List merged branches that are not protected
-          merged_branches=$(git branch -r --merged origin/main --format "%(refname:short)" | grep -v "origin/main" | grep -E "origin/feature/|origin/hotfix/")
- 
-          # Iterate through the merged branches
-          for branch in $merged_branches; do
-            # Extract branch name
-            branch_name=$(echo "$branch" | sed 's/origin\///')
- 
-            # Get the last commit date for the branch
-            commit_date=$(git log -1 --format="%ci" "$branch")
- 
-            # Check if the branch is inactive and not protected
-            if [[ "$commit_date" < "$cutoff_date" ]] && \
-               [[ "$branch_name" != "Prod" && "$branch_name" != "QA" && "$branch_name" != "Stage" && "$branch_name" != "main"  && "$branch_name" != "Dev" ]]; then
-              # Perform branch deletion
-              # git push origin --delete "$branch_name"
-              echo "$branch_name is deleted successfully!!"
-            else
-              echo "$branch_name is inactive but not deleted."
-            fi
-          done
- 
+
+          cutoff_date=$(date --date='15 days ago' +%Y-%m-%d)
+
+          git for-each-ref --format='%(refname:short) %(committerdate:short)' refs/remotes/origin | \
+            while read branch commit_date; do
+              branch=$(echo "$branch" | sed 's/origin\///')
+              if [[ "$commit_date" < "$cutoff_date" ]] && \
+                 [[ "$branch" != "main" && "$branch" != "QA" && "$branch" != "Shubham_Dev" ]]; then 
+                 git push origin --delete "$branch"
+                 echo "$branch is deleted successfully!!"
+              fi
+            done
+
       - name: List remaining branches
         run: |
           echo "********* Remaining branches *********"
