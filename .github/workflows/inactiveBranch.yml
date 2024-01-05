@@ -15,7 +15,7 @@ jobs:
  
       - name: Delete Inactive Merged Branches
         env:
-          ACTIONS_PAT: ${{ secrets.TEST_TOKEN }}
+          ACTIONS_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           git fetch --prune --unshallow
  
