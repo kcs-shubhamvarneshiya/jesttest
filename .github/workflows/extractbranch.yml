@@ -19,13 +19,17 @@ jobs:
           if [[ $GITHUB_REF == refs/pull/*/merge ]]; then
             PULL_REQUEST_ID=$(echo "$GITHUB_REF" | sed -E 's#refs/pull/([0-9]+)/merge#\1#')
             echo "pullRequest=$PULL_REQUEST_ID"
-            echo "::set-output name=branchType::pullRequest"
-            echo "::set-output name=pullRequestId::$PULL_REQUEST_ID"
+            echo "Pull Request Id : $PULL_REQUEST_ID"
+
+            # echo "::set-output name=branchType::pullRequest"
+            # echo "::set-output name=pullRequestId::$PULL_REQUEST_ID"
+
           else
             REMAINING_BRANCH=$(echo "$GITHUB_REF" | cut -d'/' -f 3-)
             echo "branch=$REMAINING_BRANCH"
-            echo "::set-output name=branchType::branch"
-            echo "::set-output name=remainingBranch::$REMAINING_BRANCH"
+            echo  "branch : $REMAINING_BRANCH"
+            # echo "::set-output name=branchType::branch"
+            # echo "::set-output name=remainingBranch::$REMAINING_BRANCH"
           fi
         env:
           GITHUB_REF: ${{ github.ref }}
