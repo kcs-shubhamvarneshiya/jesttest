@@ -45,7 +45,7 @@ jobs:
           BRANCH_NM=$(echo ${GITHUB_REF#refs/heads/})
           fi
           echo "BRANCH_NAME=((${BRANCH_NE}))" >> $GITHUB_ENV
-            
+
       - name: Scanning the project with sonarQube scanner
         run: |
           if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
@@ -77,12 +77,17 @@ jobs:
               -D.sonar.pullrequest.branch=$GITHUB_HEAD_REF
               # -Dsonar.branch.name=$BRANCH_NAME
 
+            echo "Pull reqest branch  : $GITHUB_HEAD_REF"
+            echo "Pull Request NAme : $GITHUB_EVENT_NAME"
+            echo "Pull Request Id" : $GITHUB_EVENT_NUMBER"
+
       - name: identify SonarQube Quality Gate status
 
         id: quality_gate_status
         run: |
           echo "Identifying quality gate status..."
-  
+
+
           if [[ $GITHUB_REF == refs/pull/*/merge* ]]; then
             PullRequestId=$(echo $GITHUB_REF | sed -E 's#refs/pull/([0-9]+)/merge#\1#')
             # BranchName="pullRequest=$PullRequestId"
