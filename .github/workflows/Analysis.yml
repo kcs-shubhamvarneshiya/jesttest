@@ -54,6 +54,16 @@ jobs:
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
           fi
             echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+
+          # if [[ $GITHUB_REF == refs/pull/*/merge* ]]; then
+          #   PullRequestId=$(echo $GITHUB_REF | sed -E 's#refs/pull/([0-9]+)/merge#\1#')
+          #   BranchName="pullRequest=$PullRequestId"
+          # else
+          #   IFS='/' read -ra branchParts <<< "$GITHUB_REF"
+          #   remainingBranchParts=("${branchParts[@]:2}")
+          #   remainingBranchString=$(IFS='/' ; echo "${remainingBranchParts[*]}")
+          #   BranchName="branch=$remainingBranchString"
+          # fi
             
           npm install -g sonarqube-scanner
             sonar-scanner \
@@ -70,14 +80,24 @@ jobs:
         run: |
           echo "Identifying quality gate status..."
           
-          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            BRANCH_NAME=${GITHUB_HEAD_REF}
-          else
-            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-          fi
-            echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+          # if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+          #   BRANCH_NAME=${GITHUB_HEAD_REF}
+          # else
+          #   BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+          # fi
+          #   echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
-          STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}&branch=${BRANCH_NAME}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
+          if [[ $GITHUB_REF == refs/pull/*/merge* ]]; then
+            PullRequestId=$(echo $GITHUB_REF | sed -E 's#refs/pull/([0-9]+)/merge#\1#')
+            BranchName="pullRequest=$PullRequestId"
+          else
+            IFS='/' read -ra branchParts <<< "$GITHUB_REF"
+            remainingBranchParts=("${branchParts[@]:2}")
+            remainingBranchString=$(IFS='/' ; echo "${remainingBranchParts[*]}")
+            BranchName="branch=$remainingBranchString"
+          fi
+
+          STATUS=$(curl -s "${{secrets.SERVER_URL}}/api/qualitygates/project_status?projectKey=${{secrets.PROJECT_KEY}}&${BranchName}" -u "${{secrets.LOGIN_TOKEN}}" | jq -r '.projectStatus.status')
           echo "Quality Gate Status for branch $BRANCH_NAME: $STATUS"
           echo "QUALITY_GATE_STATUS=$STATUS" >> $GITHUB_ENV
 
