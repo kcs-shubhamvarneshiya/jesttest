@@ -3,41 +3,26 @@ name: Extract Branch Info
 on:
   push:
     branches:
-      - '*'
+      - "*"
 
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   extract_branch_info:
     runs-on: ubuntu-latest
     steps:
       - name: Extract Branch Info
-        id: branch_info
         run: |
-          if [[ $GITHUB_REF == refs/pull/*/merge ]]; then
-            PULL_REQUEST_ID=$(echo "$GITHUB_REF" | sed -E 's#refs/pull/([0-9]+)/merge#\1#')
-            echo "pullRequest=$PULL_REQUEST_ID"
-            echo "Pull Request Id : $PULL_REQUEST_ID"
-
-            # echo "::set-output name=branchType::pullRequest"
-            # echo "::set-output name=pullRequestId::$PULL_REQUEST_ID"
-
+          if [[ $GITHUB_REF == refs/pull/*/merge* ]]; then
+            PullRequestId=$(echo $GITHUB_REF | sed -E 's#refs/pull/([0-9]+)/merge#\1#')
+            BranchName="pullRequest=$PullRequestId"
           else
-            REMAINING_BRANCH=$(echo "$GITHUB_REF" | cut -d'/' -f 3-)
-            echo "branch=$REMAINING_BRANCH"
-            echo  "branch : $REMAINING_BRANCH"
-            # echo "::set-output name=branchType::branch"
-            # echo "::set-output name=remainingBranch::$REMAINING_BRANCH"
+            IFS='/' read -ra branchParts <<< "$GITHUB_REF"
+            remainingBranchParts=("${branchParts[@]:2}")
+            remainingBranchString=$(IFS='/' ; echo "${remainingBranchParts[*]}")
+            BranchName="branch=$remainingBranchString"
           fi
-        env:
-          GITHUB_REF: ${{ github.ref }}
-      - name: Use Extracted Info
-        run: |
-          echo "Branch Type: ${{ steps.branch_info.outputs.branchType }}"
-          if [[ ${{ steps.branch_info.outputs.branchType }} == "pullRequest" ]]; then
-            echo "Pull Request ID: ${{ steps.branch_info.outputs.pullRequestId }}"
-          else
-            echo "Remaining Branch: ${{ steps.branch_info.outputs.remainingBranch }}"
-          fi
+
+          echo "BranchName: $BranchName"
