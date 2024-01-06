@@ -79,7 +79,7 @@ jobs:
 
             echo "Pull reqest branch  : $GITHUB_HEAD_REF"
             echo "Pull Request NAme : $GITHUB_EVENT_NAME"
-            echo "Pull Request Id" : $GITHUB_EVENT_NUMBER"
+            echo "Pull Request Id : $GITHUB_EVENT_NUMBER"
 
       - name: identify SonarQube Quality Gate status
 
