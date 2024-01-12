@@ -15,6 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install csvkit
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install csvkit
+
       - name: Get Commit and PR Count
         run: |
           branch_name=$(echo $GITHUB_REF | awk 'BEGIN{FS="/"} {print $3}')
