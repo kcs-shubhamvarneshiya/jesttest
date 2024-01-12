@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: result
-          path: result.xlsx
+          path: ./artifacts/result.xlsx
       
       - name: Read Excel File
         run: |
