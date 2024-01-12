@@ -20,6 +20,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-pip
           pip3 install csvkit
+          python -m pip install --upgrade pip
+          pip install pandas openpyxl
 
       - name: Get Commit and PR Count
         run: |
@@ -50,3 +52,15 @@ jobs:
         with:
           name: result
           path: result.xlsx
+      
+      - name: Read Excel File
+        run: |
+          python - <<EOF
+          import pandas as pd
+
+          # Read the Excel file
+          df = pd.read_excel('./artifacts/result.xlsx')
+
+          # Print the contents of the DataFrame
+          print(df)
+          EOF
