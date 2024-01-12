@@ -30,5 +30,17 @@ jobs:
           echo "Commit Count: $commit_count"
           echo "PR Count: $pr_count"
 
+          echo "Branch,Commit Count,PR Count" > result.csv
+          echo "$branch_name,$commit_count,$pr_count" >> result.csv
+
+          # Convert CSV to XLSX using csvkit (pip install csvkit)
+          csvformat -T result.csv | csvjson -i 4 > result.xlsx
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Excel File
+        uses: actions/upload-artifact@v2
+        with:
+          name: result
+          path: result.xlsx
