@@ -1,0 +1,28 @@
+name: Extract Branch Info
+
+on:
+  push:
+    branches:
+      - "*"
+
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  extract_branch_info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Branch Info
+        run: |
+          if [[ $GITHUB_REF == refs/pull/*/merge* ]]; then
+            PullRequestId=$(echo $GITHUB_REF | sed -E 's#refs/pull/([0-9]+)/merge#\1#')
+            BranchName="pullRequest=$PullRequestId"
+          else
+            IFS='/' read -ra branchParts <<< "$GITHUB_REF"
+            remainingBranchParts=("${branchParts[@]:2}")
+            remainingBranchString=$(IFS='/' ; echo "${remainingBranchParts[*]}")
+            BranchName="branch=$remainingBranchString"
+          fi
+
+          echo "BranchName: $BranchName"
