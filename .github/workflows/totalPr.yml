@@ -1,4 +1,4 @@
-name: Get Commit and PR Count
+name: Get Commit
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - "*"
+
 jobs:
   count-commits-and-prs:
     runs-on: ubuntu-latest
@@ -15,13 +16,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Fetch All Branches
+        run: git fetch --prune --unshallow
+
       - name: Count Commits per Branch
         run: |
           branches=$(git ls-remote --heads origin | awk '{print $2}' | sed 's/refs\/heads\///')
           echo "**************************************"
           echo "     BRANCH-WISE TOTAL NO COMMIT      "
           echo "**************************************"
-
           for branch in $branches; do
             commit_count=$(git rev-list --count origin/$branch)
             echo "Branch $branch has $commit_count commit(s)."
