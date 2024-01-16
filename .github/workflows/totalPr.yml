@@ -52,15 +52,4 @@ jobs:
         with:
           name: result
           path: ./artifacts/result.xlsx
-      
-      - name: Read Excel File
-        run: |
-          python - <<EOF
-          import pandas as pd
-
-          # Read the Excel file
-          df = pd.read_excel('./artifacts/result.xlsx')
-
-          # Print the contents of the DataFrame
-          print(df)
-          EOF
+    
