@@ -23,3 +23,9 @@ jobs:
             commit_count=$(git rev-list --count origin/$branch)
             echo "Branch $branch has $commit_count commit(s)."
           done
+
+      - name: Name of branches
+        run: |
+          branches=$(git branch -r | grep -v '\->' | sed 's/origin\///' | tr -d '[:space:]')
+          echo "Branches in the repository:"
+          echo "$branches"
