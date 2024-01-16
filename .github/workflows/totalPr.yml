@@ -15,41 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install csvkit
+      - name: Count Commits per Branch
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip3 install csvkit
-          python -m pip install --upgrade pip
-          pip install pandas openpyxl
+          branches=$(git branch -r | grep -v '\->' | sed 's/origin\///' | tr -d '[:space:]')
 
-      - name: Get Commit and PR Count
-        run: |
-          branch_name=$(echo $GITHUB_REF | awk 'BEGIN{FS="/"} {print $3}')
-
-          # Get commit count
-          commit_count=$(git rev-list --count HEAD)
-
-          # Get PR count
-          pr_count=$(curl -s -H "Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?state=all" | jq '. | length')
-
-          echo "Branch: $branch_name"
-          echo "Commit Count: $commit_count"
-          echo "PR Count: $pr_count"
-
-          echo "Branch,Commit Count,PR Count" > result.csv
-          echo "$branch_name,$commit_count,$pr_count" >> result.csv
-
-          # Convert CSV to XLSX using csvkit (pip install csvkit)
-          csvformat -T result.csv | csvjson -i 4 > result.xlsx
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Excel File
-        uses: actions/upload-artifact@v2
-        with:
-          name: result
-          path: ./artifacts/result.xlsx
-    
+          for branch in $branches; do
+            commit_count=$(git rev-list --count origin/$branch)
+            echo "Branch $branch has $commit_count commit(s)."
+          done
