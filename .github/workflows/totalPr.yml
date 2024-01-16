@@ -26,6 +26,6 @@ jobs:
 
       - name: Name of branches
         run: |
-          branches=$(git branch -r | grep -v '\->' | sed 's/origin\///' | tr -d '[:space:]')
+          branches=$(git ls-remote --heads origin | awk '{print $2}' | sed 's/refs\/heads\///')
           echo "Branches in the repository:"
           echo "$branches"
