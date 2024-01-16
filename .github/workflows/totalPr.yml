@@ -22,10 +22,12 @@ jobs:
       - name: Count Commits per Branch
         run: |
           branches=$(git ls-remote --heads origin | awk '{print $2}' | sed 's/refs\/heads\///')
-          echo "**************************************"
-          echo "     BRANCH-WISE TOTAL NO COMMIT      "
-          echo "**************************************"
+          echo "*********************************************"
+          echo "     BRANCH-WISE TOTAL NO COMMIT AND PR      "
+          echo "*********************************************"
+          echo "  Branch Name  |   Commits  |  Pull Request  "
           for branch in $branches; do
             commit_count=$(git rev-list --count origin/$branch)
-            echo "Branch $branch has $commit_count commit(s)."
+            pr_count=$(git rev-list --count origin/$branch --count --merges --grep "Merge pull request")
+            echo "  $branch   |   $commit_count   |   $pr_count"
           done
