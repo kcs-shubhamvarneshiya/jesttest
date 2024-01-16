@@ -16,7 +16,7 @@ jobs:
         id: get_pulls
         run: |
           echo "Analyzing..."
-          PR_LIST=$(curl -s -H "Authorization: Bearer ${{secrets.PAT_WITH_PR}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=open")
+          PR_LIST=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all")
           for pr in $(echo "${PR_LIST}" | jq -r '.[] | select(.created_at <= "1 days ago" and .state == "open" and .user.login != "dependabot[bot]") | .number'); do
             curl -X PATCH -H "Authorization: Bearer ${{secrets.PAT_WITH_PR}}" -H "Content-Type: application/json" -d '{"state":"closed"}' "https://api.github.com/repos/${{ github.repository }}/pulls/$pr"
             echo "PR closed successfully.."
