@@ -17,9 +17,9 @@ jobs:
         run: |
           echo "Analyzing..."
 
-          PR_LIST=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all")
+          PR_LIST=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/kcs-shubhamvarneshiya/jesttest/pulls?state=all")
           
           for pr in $(echo "${PR_LIST}" | jq -r '.[] | select(.created_at <= "1 days ago" and .state == "open" and .user.login != "dependabot[bot]") | .number'); do
-            curl -X PATCH -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" -H "Content-Type: application/json" -d '{"state":"closed"}' "https://api.github.com/repos/${{ github.repository }}/pulls/$pr"
+            curl -X PATCH -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" -H "Content-Type: application/json" -d '{"state":"closed"}' "https://api.github.com/repos/kcs-shubhamvarneshiya/jesttest/pulls/$pr"
             echo "PR closed successfully.."
           done
