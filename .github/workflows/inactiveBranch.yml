@@ -37,9 +37,9 @@ jobs:
             echo "Branch Name : $branch_name"
             echo "Last commmit < cut of date"
             
-            if [[ "$last_Commit_Date" < "$cutoff_date"]]; then
-              echo "Deleting branch $branch_name"
-            fi
+            # if [[ "$last_Commit_Date" < "$cutoff_date"]]; then
+            #   echo "Deleting branch $branch_name"
+            # fi
 
           done
 
