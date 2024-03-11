@@ -46,11 +46,6 @@ jobs:
             if[['2024-01-16T09:37:48Z' < '2024-03-10']]; then
               echo "last commit date is bigger..."
             fi
-
-            if[['2024-01-10' < '2024-01-16T09:37:48Z' ]]; then
-              echo "last commit date is smaller..."
-            fi
-
           done
 
       - name: List remaining branches
