@@ -28,6 +28,7 @@ jobs:
             pr_number=$(echo "$pr_data" | jq -r '.number')
             echo "inside loop dude!"
             branch_name=$(echo "$pr_data" | jq -r '.head.ref')
+            echo "branch name $branch_name | PR NO : $pr_number"
           done
 
       - name: List remaining branches
