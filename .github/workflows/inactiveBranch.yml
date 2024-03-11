@@ -21,16 +21,15 @@ jobs:
 
           # Set the cutoff date for inactive branches (e.g., 30 days ago)
           cutoff_date=$(date --date='1 days ago' +%Y-%m-%d)
-
-                  merged_prs=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&sort=updated&direction=desc")
+          pr_details=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all&sort=updated&direction=desc")
                   
-                  # Loop through the merged pull requests to find approved ones
-                  for pr in $(echo "$merged_prs" | jq -r '.[] | @base64'); do
-                    pr_data=$(echo "$pr" | base64 --decode)
-                    pr_number=$(echo "$pr_data" | jq -r '.number')
-                    branch_name=$(echo "$pr_data" | jq -r '.head.ref')
-                    echo "PR No : $pr_data"
-                    echo "branch_name : $branch_name"
+          # Loop through the merged pull requests to find approved ones
+          for pr in $(echo "$pr_details" | jq -r '.[] | @base64'); do
+              pr_data=$(echo "$pr" | base64 --decode)
+              pr_number=$(echo "$pr_data" | jq -r '.number')
+              branch_name=$(echo "$pr_data" | jq -r '.head.ref')
+              echo "PR No : $pr_data"
+              echo "branch_name : $branch_name"
                     
 
       - name: List remaining branches
