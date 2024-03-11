@@ -30,16 +30,27 @@ jobs:
             merged_Status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
             last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
 
-            echo "branch name : $branch_name"
-            echo "Last Commit Date : $last_Commit_Date"
-            echo "cutoff_date : $cutoff_date"
+            # echo "branch name : $branch_name"
+            # echo "Last Commit Date : $last_Commit_Date"
+            # echo "cutoff_date : $cutoff_date"
 
-            echo "if[['$last_Commit_Date' < '$cutoff_date']]"
+            # echo "if[['$last_Commit_Date' < '$cutoff_date']]"
 
-            if [[ "$last_Commit_Date" < "$cutoff_date" && "$merged_Status" == "true" ]]; then
-              echo "Deleting branch $branch_name"
-              #git branch -D "$branch_name"
+            # if [[ "$last_Commit_Date" < "$cutoff_date" && "$merged_Status" == "true" ]]; then
+              # echo "Deleting branch $branch_name"
+              # git branch -D "$branch_name"
+            # fi
+
+            echo "Last commmit < cut of date"
+
+            if['2024-01-16T09:37:48Z' < '2024-03-10']; then
+              echo "last commit date is bigger..."
             fi
+
+            if['2024-01-10' < '2024-01-16T09:37:48Z' ]; then
+              echo "last commit date is smaller..."
+            fi
+
           done
 
       - name: List remaining branches
