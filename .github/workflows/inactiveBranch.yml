@@ -16,20 +16,17 @@ jobs:
         env:
           ACTIONS_PAT: ${{secrets.PERSONAL_ACCESS_TOKEN}}
         run: |
-          echo "Yes Its done !!"
           git fetch --prune --unshallow
 
           cutoff_date=$(date --date='1 days ago' +%Y-%m-%d)
           prDetails=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all&sort=updated&direction=desc")
 
-          echo "Going inside the loop"
 
           for pr in $(echo "$prDetails" | jq -r '.[] | @base64'); do
 
             pr_data=$(echo "$pr" | base64 --decode)
             pr_number=$(echo "$pr_data" | jq -r '.number')
             branch_name=$(echo "$pr_data" | jq -r '.head.ref')
-            echo "Before knowing merged status.."
 
             merged_Status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
             last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
@@ -39,7 +36,7 @@ jobs:
             echo "Branch Name : $branch_name"
             echo "Last commmit < cut of date"
             
-              if [ "$last_Commit_Date" < "$cutoff_date"]; then
+              if [[ "$last_Commit_Date" < "$cutoff_date"]]; then
                   echo "Deleting branch $branch_name"
               fi
 
