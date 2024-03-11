@@ -22,7 +22,7 @@ jobs:
           # Set the cutoff date for inactive branches (e.g., 30 days ago)
           cutoff_date=$(date --date='1 days ago' +%Y-%m-%d)
 
-                  merged_prs=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&sort=updated&direction=desc")
+                  merged_prs=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&sort=updated&direction=desc")
                   
                   # Loop through the merged pull requests to find approved ones
                   for pr in $(echo "$merged_prs" | jq -r '.[] | @base64'); do
@@ -31,12 +31,12 @@ jobs:
                     branch_name=$(echo "$pr_data" | jq -r '.head.ref')
                     
                     # Check if the pull request is approved
-                     approval_status=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
-                     branch_status=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/branches/$branch_name" | jq '.message')
+                     approval_status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
+                     branch_status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/branches/$branch_name" | jq '.message')
                      branchMsg=('"Branch not found"')
                      echo "Branch is :: $branch_name"
 
-                     LAST_COMMIT_DATE=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
+                     LAST_COMMIT_DATE=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
                      
                        if [ "$approval_status" = true ] && [ -n "$branch_name" ] && [ "$branch_status" != "$branchMsg" ] && \
                           [[ "$LAST_COMMIT_DATE" < "$cutoff_date" ]] && \
