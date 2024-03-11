@@ -1,8 +1,9 @@
 name: Delete In active branches
 
 on:
-  schedule:
-    - cron: "59 23 * * *" #This Job will trigger everynight at 11:59:00 PM
+  push:
+    branches:
+      - "*"
 
 jobs:
   delete-branches:
