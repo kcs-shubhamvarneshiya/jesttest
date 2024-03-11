@@ -34,7 +34,7 @@ jobs:
             echo "Last Commit Date : $last_Commit_Date"
             echo "cutoff_date : $cutoff_date"
 
-            echo 'if[["$last_Commit_Date" < "$cutoff_date"]]''
+            echo "if[['$last_Commit_Date' < '$cutoff_date']]"
 
             if [[ "$last_Commit_Date" < "$cutoff_date" && "$merged_Status" == "true" ]]; then
               echo "Deleting branch $branch_name"
