@@ -30,7 +30,16 @@ jobs:
             merged_Status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
             last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
 
+            echo "last_Commit_Date : $last_Commit_Date"
+            echo "Cut of date : $cutoff_date"
+            echo  "Branch Name : $branch_name"
+
             echo "Last commmit < cut of date"
+            
+            if [[ "$last_Commit_Date" < "$cutoff_date"]]; then
+              echo "Deleting branch $branch_name"
+              #git branch -D "$branch_name"
+            fi
           done
 
       - name: List remaining branches
