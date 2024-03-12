@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "*"
-
 jobs:
   delete-branches:
     runs-on: ubuntu-latest
@@ -19,17 +18,27 @@ jobs:
         run: |
           git fetch --prune --unshallow
 
-          cutoff_date=$(date --date='15 days ago' +%Y-%m-%d)
+          cutoff_date=$(date --date='1 days ago' +%Y-%m-%d)
+          prDetails=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all&sort=updated&direction=desc")
 
-          git for-each-ref --format='%(refname:short) %(committerdate:short)' refs/remotes/origin | \
-            while read branch commit_date; do
-              branch=$(echo "$branch" | sed 's/origin\///')
-              if [[ "$commit_date" < "$cutoff_date" ]] && \
-                 [[ "$branch" != "main" && "$branch" != "QA" && "$branch" != "Shubham_Dev" ]]; then 
-                 git push origin --delete "$branch"
-                 echo "$branch is deleted successfully!!"
+
+          for pr in $(echo "$prDetails" | jq -r '.[] | @base64'); do
+
+            pr_data=$(echo "$pr" | base64 --decode)
+            pr_number=$(echo "$pr_data" | jq -r '.number')
+            branch_name=$(echo "$pr_data" | jq -r '.head.ref')
+
+            merged_Status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
+            last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
+            
+              if [[ "$last_Commit_Date" < "$cutoff_date" ]] && \
+              [[ "$merged_Status" == "true" ]] && \
+              [[ "$branch_name" != "Shubham_Dev" && "$branch_name" != "main"  && "$branch_name" != "Dev" ]]; then
+                  echo "Deleting $branch_name branch...... "
+                  git push origin --delete "$branch_name"
               fi
-            done
+
+          done
 
       - name: List remaining branches
         run: |
