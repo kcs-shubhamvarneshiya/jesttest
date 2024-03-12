@@ -36,8 +36,11 @@ jobs:
             echo "Branch Name : $branch_name"
             echo "Last commmit < cut of date"
             
-              if [[ "$last_Commit_Date" < "$cutoff_date" ]]; then
-                  echo "Deleting branch $branch_name"
+              if [[ "$last_Commit_Date" < "$cutoff_date" ]] && \
+              [[ "$merged_Status" == "true" ]] && \
+              [[ "$branch_name" != "Shubham_Dev" && "$branch_name" != "main"  && "$branch_name" != "Dev" ]]; then
+                  echo "Deleting $branch_name branch...... "
+                  git push origin --delete "$branch_name"
               fi
 
           done
