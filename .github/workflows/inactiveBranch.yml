@@ -42,8 +42,8 @@ jobs:
 
       - name: Get branches
         run: |
-          branche_list=$("Don ko pakad na mumkin nahi na mumkin he")
-          echo "branche_list=$branche_list" >> $GITHUB_OUTPUT
+          branche_list=$(git branch -a)
+          echo "branche_list=$branche_list" >> $GITHUB_ENV
 
       - name: Use the branches
         run: |
