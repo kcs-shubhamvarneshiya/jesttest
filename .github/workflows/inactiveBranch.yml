@@ -41,6 +41,15 @@ jobs:
 
           done
 
+      - name: Get branches
+        run: |
+          branches=$(git branch -a)
+          echo "::set-output name=branches::$branches"
+
+      - name: Use the branches
+        run: |
+          echo "Branches are : $branches"
+
       - name: List remaining branches
         run: |
           echo "********* Remaining branches *********"
