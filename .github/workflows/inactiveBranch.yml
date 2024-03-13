@@ -21,7 +21,6 @@ jobs:
           cutoff_date=$(date --date='1 days ago' +%Y-%m-%d)
           prDetails=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all&sort=updated&direction=desc")
 
-
           for pr in $(echo "$prDetails" | jq -r '.[] | @base64'); do
 
             pr_data=$(echo "$pr" | base64 --decode)
@@ -32,12 +31,12 @@ jobs:
             last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
             
               if [[ "$last_Commit_Date" < "$cutoff_date" ]] && \
-              [[ "$merged_Status" == "true"]] && \
+              [[ "$merged_Status" == "true" ]] && \
               [[ "$branch_name" != "main" && "$branch_name" != "qa" ]]; then
                   echo "Deleting $branch_name branch...... "
                   git push origin --delete "$branch_name"
                   echo "$branch_name branch Successfully Deleted !"
-              fi
+              fi 
 
           done
 
