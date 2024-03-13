@@ -42,7 +42,7 @@ jobs:
 
       - name: Get branches
         run: |
-          branche_list=$(git branch -a)
+          branche_list=$("Don ko pakad na mumkin nahi na mumkin he")
           echo "branche_list=$branche_list" >> $GITHUB_OUTPUT
 
       - name: Use the branches
