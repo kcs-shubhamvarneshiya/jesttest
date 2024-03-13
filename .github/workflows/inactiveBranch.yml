@@ -30,12 +30,13 @@ jobs:
 
             merged_Status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
             last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
-            echo "last commit of $branch_name is $last_Commit_Date and cut of date is : $cutoff_date"
-
+            
               if [[ "$last_Commit_Date" < "$cutoff_date" ]] && \
-              [[ "$branch_name" != "main" ]]; then
+              [[ "$merged_Status == 'true' "]] && \
+              [[ "$branch_name" != "main" && "$branch_name" != "qa" ]]; then
                   echo "Deleting $branch_name branch...... "
                   git push origin --delete "$branch_name"
+                  echo "$branch_name branch Successfully Deleted !"
               fi
 
           done
