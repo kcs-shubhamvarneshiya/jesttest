@@ -42,8 +42,8 @@ jobs:
 
       - name: Get branches
         run: |
-          branche_list=$(git branch -a)
-          echo "branche_list=$branche_list" >> $GITHUB_ENV
+          #branche_list=$(git branch -a)
+          echo "branche_list=$(git branch -a)" >> $GITHUB_ENV
 
       - name: Use the branches
         run: |
