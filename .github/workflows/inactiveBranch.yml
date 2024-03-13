@@ -32,7 +32,7 @@ jobs:
             last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
             
               if [[ "$last_Commit_Date" < "$cutoff_date" ]] && \
-              [[ "$merged_Status == 'true' "]] && \
+              [[ "$merged_Status" == "true"]] && \
               [[ "$branch_name" != "main" && "$branch_name" != "qa" ]]; then
                   echo "Deleting $branch_name branch...... "
                   git push origin --delete "$branch_name"
