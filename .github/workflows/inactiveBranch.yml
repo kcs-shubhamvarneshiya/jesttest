@@ -26,6 +26,7 @@ jobs:
               branch=$(echo "$branch" | sed 's/origin\///')
               if [[ "$commit_date" < "$cutoff_date" ]] && \
                  [[ "$branch" != "main" && "$branch" != "QA" && "$branch" != "Shubham_Dev" ]]; then 
+                 echo "$branch is Deleting......."
                  git push origin --delete "$branch"
                  echo "$branch is deleted successfully!!"
               fi
