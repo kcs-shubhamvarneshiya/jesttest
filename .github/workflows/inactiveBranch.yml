@@ -30,7 +30,8 @@ jobs:
 
             merged_Status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
             last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
-            
+            echo "cut of date is : $cutoff_date"
+
               if [[ "$last_Commit_Date" < "$cutoff_date" ]] && \
               [[ "$branch_name" != "main" ]]; then
                   echo "Deleting $branch_name branch...... "
