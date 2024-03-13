@@ -44,7 +44,7 @@ jobs:
         run: |
           branche_list=$(git branch -a)
           #echo "::set-output name=branches::$branches"
-          echo "{branche_list}={branche_list}" >> $GITHUB_OUTPUT
+          echo "branche_list=$branche_list" >> $GITHUB_OUTPUT
 
       - name: Use the branches
         run: |
