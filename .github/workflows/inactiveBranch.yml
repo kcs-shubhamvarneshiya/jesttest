@@ -42,12 +42,13 @@ jobs:
 
       - name: Get branches
         run: |
-          branches=$(git branch -a)
-          echo "::set-output name=branches::$branches"
+          branche_list=$(git branch -a)
+          #echo "::set-output name=branches::$branches"
+          echo "{name}={branche_list}" >> $GITHUB_OUTPUT
 
       - name: Use the branches
         run: |
-          echo "Branches are : $branches"
+          echo "Branches are : $branche_list"
 
       - name: List remaining branches
         run: |
