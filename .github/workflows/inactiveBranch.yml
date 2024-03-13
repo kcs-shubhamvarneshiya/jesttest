@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "*"
-
 jobs:
   delete-branches:
     runs-on: ubuntu-latest
@@ -19,33 +18,27 @@ jobs:
         run: |
           git fetch --prune --unshallow
 
-          # Set the cutoff date for inactive branches (e.g., 30 days ago)
           cutoff_date=$(date --date='1 days ago' +%Y-%m-%d)
+          prDetails=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all&sort=updated&direction=desc")
 
-                  merged_prs=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&sort=updated&direction=desc")
-                  
-                  # Loop through the merged pull requests to find approved ones
-                  for pr in $(echo "$merged_prs" | jq -r '.[] | @base64'); do
-                    pr_data=$(echo "$pr" | base64 --decode)
-                    pr_number=$(echo "$pr_data" | jq -r '.number')
-                    branch_name=$(echo "$pr_data" | jq -r '.head.ref')
-                    
-                    # Check if the pull request is approved
-                     approval_status=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
-                     branch_status=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/branches/$branch_name" | jq '.message')
-                     branchMsg=('"Branch not found"')
-                     echo "Branch is :: $branch_name"
 
-                     LAST_COMMIT_DATE=$(curl -s -H "Authorization: Bearer ${{secrets.TEST_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
-                     
-                       if [ "$approval_status" = true ] && [ -n "$branch_name" ] && [ "$branch_status" != "$branchMsg" ] && \
-                          [[ "$LAST_COMMIT_DATE" < "$cutoff_date" ]] && \
-                          [[ "$branch_name" != "Prod" && "$branch_name" != "QA" && "$branch_name" != "Stage" && "$branch_name" != "main"  && "$branch_name" != "Dev" ]]; then
-                            echo "Pull Request for $branch_name and $pr_number is approved."
-                            git push origin --delete "$branch_name"
-                            echo "$branch_name is deleted !!"
-                       fi
-                  done
+          for pr in $(echo "$prDetails" | jq -r '.[] | @base64'); do
+
+            pr_data=$(echo "$pr" | base64 --decode)
+            pr_number=$(echo "$pr_data" | jq -r '.number')
+            branch_name=$(echo "$pr_data" | jq -r '.head.ref')
+
+            merged_Status=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number" | jq '.merged')
+            last_Commit_Date=$(curl -s -H "Authorization: Bearer ${{secrets.PERSONAL_ACCESS_TOKEN}}" "https://api.github.com/repos/${{ github.repository }}/commits/$branch_name" | jq -r '.commit.author.date')
+            echo "last commit of $branch_name is $last_Commit_Date and cut of date is : $cutoff_date"
+
+              if [[ "$last_Commit_Date" < "$cutoff_date" ]] && \
+              [[ "$branch_name" != "main" ]]; then
+                  echo "Deleting $branch_name branch...... "
+                  git push origin --delete "$branch_name"
+              fi
+
+          done
 
       - name: List remaining branches
         run: |
